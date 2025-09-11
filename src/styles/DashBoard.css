@@ -1,0 +1,10 @@
+@media screen and (max-width: 650px) {
+    .container-all {
+        padding: 0;
+        flex-direction: column;
+    }
+}
+
+.ratio-1  { 
+    aspect-ratio: 1/1;
+}

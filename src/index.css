@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@import "./styles/colors.css";
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--color-dark);
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  cursor: pointer;
+}

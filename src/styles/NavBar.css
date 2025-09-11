@@ -1,0 +1,21 @@
+.navigator * {
+    user-select: none;
+}
+
+.navigator {
+    border-radius: 1rem;
+}
+
+.navigator:hover {
+    background-color: var(--color-light);
+}
+
+@media screen and (max-width: 650px) {
+    .navigator span {
+        display: none;
+    }
+
+    .navigator {
+        width: 2rem;
+    }
+}
