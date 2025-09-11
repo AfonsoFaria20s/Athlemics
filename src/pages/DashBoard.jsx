@@ -25,8 +25,10 @@ const DashBoard = () => {
     const stored = JSON.parse(localStorage.getItem("blocks")) || [];
     setBlocks(stored);
 
-    const storedAccountDetails = JSON.parse(localStorage.getItem("perfil") || account);
-    setAccount(storedAccountDetails);
+    const storedAccount = localStorage.getItem("perfil");
+    if (storedAccount) {
+      setAccount(JSON.parse(storedAccount));
+    }
   }, []);
 
   useEffect(() => {
@@ -102,10 +104,20 @@ const DashBoard = () => {
   return (
     <div className="">
       {/* Boas vindas */}
-      <div className="px-20 pt-8 pb-4">
-        <h1 className="text-2xl font-bold text-blue-800">Bem-vindo {account.nome}!</h1>
-        <p className="text-slate-600">Organize o seu dia e acompanhe o seu progresso.</p>
-      </div>
+      {account.nome ?(
+        <>
+          <div className="px-20 pt-8 pb-4">
+            <h1 className="text-2xl font-bold text-blue-800">Bem-vindo {account.nome}!</h1>
+            <p className="text-slate-600">Organize o seu dia e acompanhe o seu progresso.</p>
+          </div>
+        </>
+      ):(
+        <>
+          <div className="px-20 pt-8 pb-4">
+            <h1 className="text-2xl font-bold text-blue-800">Bem-vindo! Comece por introduzir os seus dados <a href="/conta" className="text-red">aqui</a></h1>
+          </div>
+        </>
+      )}
       <div className="container-all flex flex-wrap gap-4 px-20 pb-20">
         {/* 3 Cartões em linha */}
         <div className="flex gap-6 mb-8 w-full">
