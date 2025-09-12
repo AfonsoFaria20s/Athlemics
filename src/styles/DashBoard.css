@@ -8,3 +8,8 @@
 .ratio-1  { 
     aspect-ratio: 1/1;
 }
+
+.timeline-block svg {
+    height: 18px;
+    width: 18px;
+}
