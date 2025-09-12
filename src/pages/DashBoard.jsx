@@ -148,6 +148,21 @@ const DashBoard = () => {
   const minuteHeight = HOUR_HEIGHT / 60 + HOUR_GAP / 60;
   const currentTop = currentMinutes * minuteHeight + PADDING_TOP;
 
+  const taskBlocks = blocks
+  .filter(b => {
+    if (!isSameDate(new Date(b.date), selectedDate)) return false;
+    if (!(b.type === "task" || b.type === "meeting")) return false;
+
+    if (isSameDate(selectedDate, currentTime)) {
+      const blockMinutes = toMinutes(b.start);
+      return blockMinutes >= currentTime.getHours() * 60 + currentTime.getMinutes();
+    }
+
+    return true;
+  })
+  .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+
+
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-6 pt-10 pb-16">
@@ -183,26 +198,17 @@ const DashBoard = () => {
           <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl shadow border border-blue-200">
             <h3 className="text-lg font-bold text-blue-800 mb-4">Tarefas</h3>
             <ul className="space-y-2 text-gray-700 text-sm">
-              {blocks
-                .filter(b => {
-                  if (!isSameDate(new Date(b.date), selectedDate)) return false;
-                  if (!(b.type === "task" || b.type === "meeting")) return false;
-
-                  // se for hoje, filtra apenas os blocos depois da hora atual
-                  if (isSameDate(selectedDate, currentTime)) {
-                    const blockMinutes = toMinutes(b.start);
-                    return blockMinutes >= currentTime.getHours() * 60 + currentTime.getMinutes();
-                  }
-                  return true; // se for outro dia, mostra todos
-                })
-                .sort((a, b) => toMinutes(a.start) - toMinutes(b.start))
-                .map(b => (
-                  <li key={b.id} className="flex gap-2 items-center">
+              {taskBlocks.length === 0 ? (
+                <li className="text-slate-500">Nenhuma tarefa ou reunião futura</li>
+              ) : (
+                taskBlocks.map(b => (
+                  <li key={b.id} className="flex gap-2 items-center text-black">
                     <span className="font-mono text-xs text-blue-600">{b.start}</span> - {b.title} {b.type === "meeting" && "(Reunião)"}
                   </li>
                 ))
-                .length === 0 && <li className="text-slate-500">Nenhuma tarefa ou reunião futura</li>}
+              )}
             </ul>
+
           </div>
 
           <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl shadow border border-blue-200">
@@ -326,8 +332,8 @@ const DashBoard = () => {
                     className={`timeline-block absolute flex items-center px-3 py-2 rounded-lg shadow-md text-sm
                       ${block.type === "study" ? "bg-slate-500 text-white" : ""}
                       ${block.type === "train" ? "bg-yellow-300 text-white" : ""}
-                      ${block.type === "class" ? "bg-blue-300 text-white" : ""}
-                      ${block.type === "task" ? "bg-brown-300 text-white" : ""}
+                      ${block.type === "class" ? "bg-yellow-700 text-white" : ""}
+                      ${block.type === "task" ? "bg-sky-600 text-white" : ""}
                       ${block.type === "meeting" ? "bg-green-300 text-white" : ""}
                       ${block.completed ? "line-through opacity-70" : ""}`}
                     style={{ top: displayTop, height, zIndex:20, width:`${blockWidth}%`, left:`${leftOffset}%`, cursor: "grab" }}
