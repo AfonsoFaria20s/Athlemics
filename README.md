@@ -1,12 +1,49 @@
-# React + Vite
+# Athlemics
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Athlemics is a web application designed to help student-athletes organize their daily schedules, balancing study, training, tasks, and meetings. Built with React, it offers a clean and intuitive interface featuring a daily timeline, interactive calendar, and personal statistics.
 
-Currently, two official plugins are available:
+## Website
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+https://athlemics.pages.dev
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Monthly Calendar**: Easily navigate between months and select specific days.
+- **Daily Timeline**: Vertical day view with draggable time blocks.
+- **Customizable Blocks**: Create blocks with title, description, time, and type (study, training, class, task, meeting).
+- **Mark as Completed**: Track your progress throughout the day.
+- **Summary Cards**:
+  - Next upcoming blocks
+  - Future tasks and meetings
+  - Goals (to be implemented)
+- **Profile Management**:
+  - Store your name, course, email, and sport modality
+  - Display statistics: total blocks, study/training hours, last activity
+
+## Technologies Used
+
+- React
+- Tailwind CSS (via utility classes in JSX)
+- LocalStorage for data persistence
+
+## Local Setup
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/AfonsoFaria20s/Athlemics.git
+   cd Athlemics
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+This project is ideal for students and athletes looking to maintain a structured and productive daily routine.
