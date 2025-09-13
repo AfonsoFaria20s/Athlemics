@@ -46,5 +46,15 @@
   "type_train": "训练",
   "type_class": "课程",
   "type_task": "任务",
-  "type_meeting": "会议"
+  "type_meeting": "会议",
+  "add_goal": "添加目标",
+  "completed_goals": "已完成目标",
+  "no_completed_goals": "尚无已完成的目标。",
+  "goal_title": "目标标题",
+  "goal_description": "目标描述",
+  "create_goal": "创建目标",
+  "edit_goal": "编辑目标",
+  "close": "关闭",
+  "created": "创建于",
+  "completed": "完成于"
 }

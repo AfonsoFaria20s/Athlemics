@@ -46,5 +46,17 @@
   "type_train": "Training",
   "type_class": "Klasse",
   "type_task": "Aufgabe",
-  "type_meeting": "Meeting"
+  "type_meeting": "Meeting",
+  "add_goal": "Ziel hinzufügen",
+  "completed_goals": "Erreichte Ziele",
+  "no_completed_goals": "Noch keine Ziele erreicht.",
+  "goal_title": "Zieltitel",
+  "goal_description": "Zielbeschreibung",
+  "create_goal": "Ziel erstellen",
+  "edit_goal": "Ziel bearbeiten",
+  "close": "Schließen",
+  "created": "Erstellt",
+  "completed": "Abgeschlossen"
+
+
 }

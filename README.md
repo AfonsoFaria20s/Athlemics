@@ -64,3 +64,7 @@ Athlemics is a web application designed to help student-athletes organize their 
 - Adding more languages is simple: create a new JSON file in `locales` and add an option in the dropdown.
 
 This project is ideal for students and athletes looking to maintain a structured and productive daily routine while supporting multiple la
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE.txt](LICENSE.txt) file for details.

@@ -23,6 +23,14 @@ const DashBoard = () => {
     modalidade: "",
   });
 
+  // Metas
+  const [goals, setGoals] = useState([]);
+  const [showAddGoalModal, setShowAddGoalModal] = useState(false);
+  const [goalTitle, setGoalTitle] = useState("");
+  const [goalDescription, setGoalDescription] = useState("");
+  const [showGoalsModal, setShowGoalsModal] = useState(false);
+
+
   const HOUR_HEIGHT = 32;
   const HOUR_GAP = 8;
   const TOTAL_HEIGHT = (HOUR_HEIGHT + HOUR_GAP) * 24;
@@ -79,9 +87,18 @@ const DashBoard = () => {
     const stored = JSON.parse(localStorage.getItem("blocks")) || [];
     setBlocks(stored);
 
+    const storedGoals = JSON.parse(localStorage.getItem("goals")) || [];
+    setGoals(storedGoals);
+
     const storedAccount = localStorage.getItem("perfil");
     if (storedAccount) setAccount(JSON.parse(storedAccount));
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("goals", JSON.stringify(goals));
+  }, [goals]);
+
+
 
   useEffect(() => {
     localStorage.setItem("blocks", JSON.stringify(blocks));
@@ -166,6 +183,46 @@ const DashBoard = () => {
   })
   .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
 
+  // Criar nova meta
+  const handleAddGoal = () => {
+    if (!goalTitle) return;
+
+    const newGoal = {
+      id: Date.now(),
+      title: goalTitle,
+      description: goalDescription,
+      createdAt: new Date(),
+      completedAt: null,
+    };
+
+    setGoals(prev => {
+      const updated = [...prev, newGoal];
+      localStorage.setItem("goals", JSON.stringify(updated));
+      return updated;
+    });
+
+    setGoalTitle("");
+    setGoalDescription("");
+    setShowAddGoalModal(false);
+  };
+
+  const toggleGoalCompleted = (id) => {
+    setGoals(prev => {
+      const updated = prev.map(goal =>
+        goal.id === id
+          ? { ...goal, completedAt: goal.completedAt ? null : new Date() }
+          : goal
+      );
+      localStorage.setItem("goals", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleEditGoal = (goal) => {
+    setGoalTitle(goal.title);
+    setGoalDescription(goal.description);
+    setShowAddGoalModal(true);
+  };
 
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen">
@@ -215,12 +272,125 @@ const DashBoard = () => {
 
           </div>
 
+          {/* Card de Metas */}
           <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl shadow border border-blue-200">
             <h3 className="text-lg font-bold text-blue-800 mb-4">{t("goals")}</h3>
+
+            <button
+              onClick={() => setShowAddGoalModal(true)}
+              className="mb-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+            >
+              + {t("add_goal")}
+            </button>
+
+            <button
+              onClick={() => setShowGoalsModal(true)}
+              className="mb-4 ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              {t("completed_goals")}
+            </button>
+
             <ul className="space-y-2 text-gray-700 text-sm">
-              <li>{t("no_goals")}</li>
+              {goals.filter(goal => !goal.completedAt).length === 0 ? (
+                <li className="text-slate-500">{t("no_goals")}</li>
+              ) : (
+                goals
+                  .filter(goal => !goal.completedAt)
+                  .map(goal => (
+                    <li key={goal.id} className="flex justify-between items-center">
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => handleEditGoal(goal)}
+                      >
+                        {goal.title} ({new Date(goal.createdAt).toLocaleDateString()})
+                      </span>
+                      <button
+                        onClick={() => toggleGoalCompleted(goal.id)}
+                        className="ml-2 text-dark px-2 rounded"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" 
+                        className="size-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                        </svg>
+                      </button>
+                    </li>
+                  ))
+              )}
             </ul>
           </div>
+
+
+
+          {/* Modal de Metas Concluídas */}
+          {showGoalsModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="bg-white rounded-xl shadow-2xl p-6 w-[400px] max-w-full max-h-[80vh] overflow-y-auto">
+                <h3 className="text-xl font-bold mb-4">{t("completed_goals")}</h3>
+                {goals.filter(g => g.completedAt).length === 0 ? (
+                  <p className="text-slate-500">{t("no_completed_goals")}</p>
+                ) : (
+                  goals.filter(g => g.completedAt).map(goal => (
+                    <div key={goal.id} className="mb-4 p-3 border rounded">
+                      <h4 className="font-semibold">{goal.title}</h4>
+                      <p className="text-sm text-slate-600">{goal.description}</p>
+                      <p className="text-xs text-slate-400">
+                        {t("created")}: {new Date(goal.createdAt).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {t("completed")}: {new Date(goal.completedAt).toLocaleString()}
+                      </p>
+                    </div>
+                  ))
+                )}
+                <button
+                  onClick={() => setShowGoalsModal(false)}
+                  className="mt-4 bg-gray-300 px-4 py-1 rounded hover:bg-gray-400"
+                >
+                  {t("close")}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showAddGoalModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="bg-white rounded-xl shadow-2xl p-6 w-[400px] max-w-full">
+                <h2 className="text-lg font-bold mb-4 text-blue-800">
+                  {goalTitle ? t("edit_goal") : t("add_goal")}
+                </h2>
+
+                <input
+                  type="text"
+                  placeholder={t("goal_title")}
+                  value={goalTitle}
+                  onChange={(e) => setGoalTitle(e.target.value)}
+                  className="border border-slate-400 rounded px-2 py-1 mb-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+
+                <textarea
+                  placeholder={t("goal_description")}
+                  value={goalDescription}
+                  onChange={(e) => setGoalDescription(e.target.value)}
+                  className="border border-slate-400 rounded px-2 py-1 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleAddGoal}
+                    className="bg-purple-500 text-white px-4 py-1 rounded hover:bg-purple-600"
+                  >
+                    {goalTitle ? t("save_changes") : t("create_goal")}
+                  </button>
+                  <button
+                    onClick={() => setShowAddGoalModal(false)}
+                    className="bg-gray-300 text-black px-4 py-1 rounded hover:bg-gray-400"
+                  >
+                    {t("cancel")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Calendário + Timeline */}

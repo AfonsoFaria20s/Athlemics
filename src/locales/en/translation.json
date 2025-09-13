@@ -46,5 +46,15 @@
   "type_train": "Training",
   "type_class": "Class",
   "type_task": "Task",
-  "type_meeting": "Meeting"  
+  "type_meeting": "Meeting",
+  "add_goal": "Add Goal",
+  "completed_goals": "Completed Goals",
+  "no_completed_goals": "No completed goals yet.",
+  "goal_title": "Goal Title",
+  "goal_description": "Goal Description",
+  "create_goal": "Create Goal",
+  "edit_goal": "Edit Goal",
+  "close": "Close",
+  "created": "Created",
+  "completed": "Completed"
 }

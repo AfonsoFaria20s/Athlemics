@@ -46,5 +46,15 @@
   "type_train": "Entrenamiento",
   "type_class": "Clase",
   "type_task": "Tarea",
-  "type_meeting": "Reunión"
+  "type_meeting": "Reunión",
+  "add_goal": "Agregar Meta",
+  "completed_goals": "Metas Completadas",
+  "no_completed_goals": "Aún no hay metas completadas.",
+  "goal_title": "Título de la Meta",
+  "goal_description": "Descripción de la Meta",
+  "create_goal": "Crear Meta",
+  "edit_goal": "Editar Meta",
+  "close": "Cerrar",
+  "created": "Creada",
+  "completed": "Completada"
 }

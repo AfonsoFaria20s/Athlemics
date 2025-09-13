@@ -46,5 +46,15 @@
   "type_train": "Entraînement",
   "type_class": "Cours",
   "type_task": "Tâche",
-  "type_meeting": "Réunion"
+  "type_meeting": "Réunion",
+  "add_goal": "Ajouter un Objectif",
+  "completed_goals": "Objectifs Atteints",
+  "no_completed_goals": "Aucun objectif atteint pour le moment.",
+  "goal_title": "Titre de l'Objectif",
+  "goal_description": "Description de l'Objectif",
+  "create_goal": "Créer l'Objectif",
+  "edit_goal": "Modifier l'Objectif",
+  "close": "Fermer",
+  "created": "Créée",
+  "completed": "Terminée"
 }
