@@ -73,22 +73,6 @@ const Conta = () => {
 
   return (
     <div className="p-6 min-h-screen bg-gradient-to-b from-white to-blue-50">
-      <div className="flex justify-end mb-4">
-        <select
-          value={i18n.language}
-          onChange={(e) => i18n.changeLanguage(e.target.value)}
-          className="border rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="pt">🇵🇹 Português</option>
-          <option value="en">🇬🇧 English</option>
-          <option value="es">🇪🇸 Español</option>
-          <option value="fr">🇫🇷 Français</option>
-          <option value="de">🇩🇪 Deutsch</option>
-          <option value="zh">🇨🇳 中文</option>
-        </select>
-      </div>
-
-
       {perfilEstaSalvo ? (
         <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md space-y-6">
           <div className="text-center">
@@ -152,6 +136,20 @@ const Conta = () => {
           </div>
         </div>
       )}
+      <div className="fixed bottom-4 right-4 opacity-70 text-sm">
+        <select
+          value={i18n.language}
+          onChange={(e) => i18n.changeLanguage(e.target.value)}
+          className="border border-slate-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs bg-white"
+        >
+          <option value="pt">🇵🇹 PT</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="fr">🇫🇷 FR</option>
+          <option value="de">🇩🇪 DE</option>
+          <option value="zh">🇨🇳 ZH</option>
+        </select>
+      </div>
     </div>
   );
 };
