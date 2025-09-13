@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../styles/DashBoard.css";
+import { useTranslation } from "react-i18next";
+
 
 const DashBoard = () => {
+  const { t, i18n } = useTranslation();
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [blocks, setBlocks] = useState([]);
   const [blockTitle, setBlockTitle] = useState("");
@@ -169,13 +173,13 @@ const DashBoard = () => {
         {/* Header */}
         {account.nome ? (
           <div className="mb-10">
-            <h1 className="text-3xl font-extrabold text-blue-800">Bem-vindo {account.nome}!</h1>
-            <p className="text-slate-600 mt-1 text-base">Organize o seu dia e acompanhe o seu progresso de atleta-estudante.</p>
+            <h1 className="text-3xl font-extrabold text-blue-800">{t("welcome_dashboard")} {account.nome}!</h1>
+            <p className="text-slate-600 mt-1 text-base">{t("organize_your_day")}</p>
           </div>
         ) : (
           <div className="mb-10">
             <h1 className="text-2xl font-bold text-blue-800">
-              Bem-vindo! Comece por introduzir os seus dados <a href="/conta" className="text-blue-600 underline hover:text-blue-800">aqui</a>
+              {t("welcome_dashboard")} {t("start_by_entering_data")} <a href="/conta" className="text-blue-600 underline hover:text-blue-800">{t("here")}</a>
             </h1>
           </div>
         )}
@@ -183,27 +187,27 @@ const DashBoard = () => {
         {/* Cards */}
         <div className="flex flex-wrap gap-6 mb-12">
           <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl shadow border border-blue-200">
-            <h3 className="text-lg font-bold text-blue-800 mb-4">Próximos Blocos</h3>
+            <h3 className="text-lg font-bold text-blue-800 mb-4">{t("next_blocks")}</h3>
             <ul className="space-y-2 text-gray-700 text-sm">
               {nextBlocks.length > 0 ? nextBlocks.map(b => (
                 <li key={b.id} className="flex gap-2 items-center">
                   <span className="font-mono text-xs text-blue-600">{b.start}</span> - {b.title}
                 </li>
               )) : (
-                <li className="text-slate-500">Nenhum bloco próximo</li>
+                <li className="text-slate-500">{t("no_next_blocks")}</li>
               )}
             </ul>
           </div>
 
           <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl shadow border border-blue-200">
-            <h3 className="text-lg font-bold text-blue-800 mb-4">Tarefas</h3>
+            <h3 className="text-lg font-bold text-blue-800 mb-4">{t("tasks")}</h3>
             <ul className="space-y-2 text-gray-700 text-sm">
               {taskBlocks.length === 0 ? (
-                <li className="text-slate-500">Nenhuma tarefa ou reunião futura</li>
+                <li className="text-slate-500">{t("no_tasks")}</li>
               ) : (
                 taskBlocks.map(b => (
                   <li key={b.id} className="flex gap-2 items-center text-black">
-                    <span className="font-mono text-xs text-blue-600">{b.start}</span> - {b.title} {b.type === "meeting" && "(Reunião)"}
+                    <span className="font-mono text-xs text-blue-600">{b.start}</span> - {b.title} {b.type === "meeting" && "("+t("type_meeting")+")"}
                   </li>
                 ))
               )}
@@ -212,9 +216,9 @@ const DashBoard = () => {
           </div>
 
           <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl shadow border border-blue-200">
-            <h3 className="text-lg font-bold text-blue-800 mb-4">Metas</h3>
+            <h3 className="text-lg font-bold text-blue-800 mb-4">{t("goals")}</h3>
             <ul className="space-y-2 text-gray-700 text-sm">
-              <li>Sem metas definidas.</li>
+              <li>{t("no_goals")}</li>
             </ul>
           </div>
         </div>
@@ -225,7 +229,7 @@ const DashBoard = () => {
           <div className="bg-white rounded-2xl p-6 shadow flex-1 min-w-[320px] max-w-lg border border-blue-100">
             <div className="flex justify-between items-center mb-4">
               <button onClick={() => handleMonthChange("prev")} className="px-3 py-1 rounded hover:bg-slate-200 text-xl">‹</button>
-              <h2 className="font-semibold text-lg text-blue-800">{selectedDate.toLocaleString("pt-PT", { month: "long", year: "numeric" })}</h2>
+              <h2 className="font-semibold text-lg text-blue-800">{selectedDate.toLocaleString(i18n.language, { month: "long", year: "numeric" })}</h2>
               <button onClick={() => handleMonthChange("next")} className="px-3 py-1 rounded hover:bg-slate-200 text-xl">›</button>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-slate-500 mb-2">
@@ -251,7 +255,7 @@ const DashBoard = () => {
           <div className="bg-white rounded-2xl p-6 shadow flex-1 min-w-[350px] border border-blue-100">
             <h2 className="text-lg font-bold text-blue-800 mb-4">Dia {selectedDate.toLocaleDateString("pt-PT")}</h2>
             <button onClick={() => setShowForm(true)} className="mb-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition w-fit">
-              + Adicionar Bloco
+              + {t("add_block")}
             </button>
 
             <div className="relative overflow-y-scroll max-h-[400px] rounded bg-slate-50 border border-slate-200" style={{ minWidth: 220, height: TOTAL_HEIGHT, paddingTop: PADDING_TOP, paddingLeft: 16 }}>
@@ -378,7 +382,7 @@ const DashBoard = () => {
 
                 {filteredBlocks.length === 0 && (
                   <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 text-slate-400 text-center text-sm">
-                    Nenhum bloco para este dia
+                    {t("no_blocks")}
                   </div>
                 )}
               </div>
@@ -403,18 +407,18 @@ const DashBoard = () => {
                   </div>
                   <select value={blockType} onChange={e => setBlockType(e.target.value)}
                       className="border border-slate-400 rounded px-2 py-1 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
-                      <option value="study">Estudo</option>
-                      <option value="train">Treino</option>
-                      <option value="class">Aula</option>
-                      <option value="task">Tarefa</option>
-                      <option value="meeting">Reunião</option>
+                      <option value="study">{t("type_study")}</option>
+                      <option value="train">{t("type_train")}</option>
+                      <option value="class">{t("type_class")}</option>
+                      <option value="task">{t("type_task")}</option>
+                      <option value="meeting">{t("type_meeting")}</option>
                     </select>
                   <div className="flex gap-2">
                     <button onClick={handleAddBlock} className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition">
                       {editId ? "Guardar alterações" : "Guardar"}
                     </button>
                     <button onClick={() => { setShowForm(false); setBlockTitle(""); setBlockStart(""); setBlockEnd(""); setBlockType("study"); setEditId(null); }}
-                      className="bg-slate-400 text-white px-4 py-1 rounded hover:bg-slate-500 transition">Cancelar</button>
+                      className="bg-slate-400 text-white px-4 py-1 rounded hover:bg-slate-500 transition">{t("cancel")}</button>
                   </div>
                 </div>
               </div>

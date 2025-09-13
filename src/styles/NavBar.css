@@ -4,6 +4,8 @@
 
 .navigator {
     border-radius: 1rem;
+    cursor: pointer;
+    transition: .3s;
 }
 
 .navigator:hover {
