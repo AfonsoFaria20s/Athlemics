@@ -16,7 +16,6 @@ import PublicRoute from './routes/PublicRoute';
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
     <BrowserRouter>
-      <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
 
@@ -28,12 +27,14 @@ createRoot(document.getElementById('root')).render(
 
         <Route path="/dashboard" element={
           <PrivateRoute>
+            <Navbar />
             <DashBoard />
           </PrivateRoute>
         } />
 
         <Route path="/conta" element={
           <PrivateRoute>
+            <Navbar />
             <Account />
           </PrivateRoute>
         } />
