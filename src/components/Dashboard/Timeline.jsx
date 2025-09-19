@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // Constantes da Timeline
 const HOUR_HEIGHT = 32;
@@ -12,9 +12,29 @@ const Timeline = ({ selectedDate, filteredBlocks, setBlocks, setShowForm, openEd
   const [currentTime, setCurrentTime] = useState(new Date());
   const [dragging, setDragging] = useState(null); // { id, startY, originalStart, originalEnd }
 
+  const containerRef = useRef(null);
+  const initialCentered = useRef(false);
+
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (initialCentered.current) return;
+    const el = containerRef.current;
+    if (!el) return;
+    if (! (new Date().toDateString() === selectedDate.toDateString()) ) {
+      initialCentered.current = true;
+      return;
+    }
+    const raf = requestAnimationFrame(() => {
+      const currentTop = (currentTime.getHours() * 60 + currentTime.getMinutes()) * MINUTE_HEIGHT + PADDING_TOP;
+      const target = Math.max(0, currentTop - el.clientHeight / 2);
+      el.scrollTop = target;
+    });
+    initialCentered.current = true;
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   useEffect(() => {
@@ -101,7 +121,7 @@ const Timeline = ({ selectedDate, filteredBlocks, setBlocks, setShowForm, openEd
         + {t("add_block")}
       </button>
 
-      <div className="relative overflow-y-scroll max-h-[400px] rounded bg-slate-50 border border-slate-200" style={{ height: TOTAL_HEIGHT, paddingTop: PADDING_TOP, paddingLeft: 16 }}>
+      <div ref={containerRef} className="relative overflow-y-scroll max-h-[400px] rounded bg-slate-50 border border-slate-200" style={{ height: TOTAL_HEIGHT, paddingTop: PADDING_TOP, paddingLeft: 16 }}>
         {/* Horas */}
         <div className="absolute w-14 flex flex-col z-10 pointer-events-none">
           {Array.from({ length: 24 }).map((_, hour) => (
@@ -151,12 +171,12 @@ const Timeline = ({ selectedDate, filteredBlocks, setBlocks, setShowForm, openEd
             })}
 
             {isToday && (
-                <>
-                    <div className="absolute left-0 right-0 h-[2px] bg-red-500 z-30" style={{ top: currentTop }} />
-                    <div className="absolute left-[-10px] z-40 px-1 bg-red-500 text-white text-xs font-bold rounded" style={{ top: currentTop - 8 }}>
-                        {currentTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                </>
+              <>
+                <div className="absolute left-0 right-0 h-[2px] bg-red-500 z-30" style={{ top: currentTop }} />
+                <div className="absolute left-[-10px] z-40 px-1 bg-red-500 text-white text-xs font-bold rounded" style={{ top: currentTop - 8 }}>
+                    {currentTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </>
             )}
 
             {filteredBlocks.length === 0 && (
