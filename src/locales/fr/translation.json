@@ -66,5 +66,6 @@
   "confirm_deletion": "Confirmer",
   "choose_delete_option": "Comment souhaitez-vous supprimer ?",
   "delete_one": "Celui-ci",
-  "delete_all_repeated": "Tous les répétés"
+  "delete_all_repeated": "Tous les répétés",
+  "logout": "Pour sortir"
 }

@@ -66,5 +66,6 @@
   "confirm_deletion": "确认",
   "choose_delete_option": "您想如何删除？",
   "delete_one": "仅此项",
-  "delete_all_repeated": "全部重复项"
+  "delete_all_repeated": "全部重复项",
+  "logout": "出去"
 }
