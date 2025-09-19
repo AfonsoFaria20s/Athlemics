@@ -70,5 +70,8 @@
   "choose_delete_option": "Como deseja eliminar?",
   "delete_one": "Este",
   "delete_all_repeated": "Todos",
-  "logout": "Sair"
+  "logout": "Sair",
+
+  "health_navbar": "Saude",
+  "delete_all_repeated_from": "A partir de hoje"
 }

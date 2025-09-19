@@ -12,6 +12,7 @@ import Home from './components/Home/Home';
 
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
+import Health from './components/Health/Health';
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
@@ -32,12 +33,19 @@ createRoot(document.getElementById('root')).render(
           </PrivateRoute>
         } />
 
-        <Route path="/conta" element={
+        <Route path="/account" element={
           <PrivateRoute>
             <Navbar />
             <Account />
           </PrivateRoute>
         } />
+        <Route path="/health" element={
+          <PrivateRoute>
+            <Navbar/>
+            <Health/>
+          </PrivateRoute>
+        }
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

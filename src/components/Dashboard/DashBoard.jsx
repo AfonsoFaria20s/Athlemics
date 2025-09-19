@@ -119,9 +119,12 @@ const DashBoard = () => {
     .filter(b => b.date === dateStringToFilter)
     .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
 
+  // Próximos blocos apenas do dia atual (até 3)
+  const todayStr = formatLocalDate(new Date());
+  const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
   const nextBlocks = blocks
-    .filter(b => new Date(`${b.date}T${b.start}`) >= new Date())
-    .sort((a, b) => new Date(`${a.date}T${a.start}`) - new Date(`${b.date}T${b.start}`))
+    .filter(b => b.date === todayStr && toMinutes(b.start) >= nowMinutes)
+    .sort((a, b) => toMinutes(a.start) - toMinutes(b.start))
     .slice(0, 3);
 
   const taskBlocks = blocks
@@ -230,12 +233,30 @@ const DashBoard = () => {
     setBlockToDelete(null);
   };
 
+  // Remove todas as ocorrências a partir (e incluindo) o bloco selecionado
+  const handleConfirmRemoveFrom = () => {
+    if (!blockToDelete) return;
+    const baseDate = new Date(blockToDelete.date);
+    setBlocks(prev =>
+      prev.filter(b => {
+        const bDate = new Date(b.date);
+        if (blockToDelete.repeatId) {
+          // para blocos repetidos: remove todos com o mesmo repeatId e data >= baseDate
+          return !(b.repeatId === blockToDelete.repeatId && bDate >= baseDate);
+        }
+        // fallback: para blocos não repetidos, remove blocos com mesmo título e data >= baseDate
+        return !(b.title === blockToDelete.title && bDate >= baseDate);
+      })
+    );
+    setBlockToDelete(null);
+  };
+
   const removeBlock = (id) => {
     const block = blocks.find(b => b.id === id);
     if (!block) return;
     setBlockToDelete(block); // abre modal
   };
-
+  
   const openEditModal = (block) => {
     setEditId(block.id);
     setFormData({
@@ -249,7 +270,7 @@ const DashBoard = () => {
 
     setShowForm(true);
   };
-
+  
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-6 pt-10 pb-16">
@@ -297,6 +318,7 @@ const DashBoard = () => {
             onCancel={handleCancelDelete}
             onRemoveOne={handleConfirmRemoveOne}
             onRemoveAll={handleConfirmRemoveAll}
+            onRemoveFrom={handleConfirmRemoveFrom}
             t={t}
           />
         )}
