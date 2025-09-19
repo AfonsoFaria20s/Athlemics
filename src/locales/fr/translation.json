@@ -1,4 +1,8 @@
 {
+  "welcome_home": "Bienvenue sur Athlemics",
+  "welcomeDesc_home": "Votre outil pour organiser votre temps, vos entraînements et vos études avec un calendrier visuel, des objectifs et des tâches personnalisées.",
+  "enter_register": "Se connecter / S'inscrire",
+
   "dashboard_navbar": "Dashboard",
   "account_navbar": "Compte",
 

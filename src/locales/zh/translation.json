@@ -1,4 +1,8 @@
 {
+  "welcome_home": "欢迎使用 Athlemics",
+  "welcomeDesc_home": "帮助你通过可视化日历、目标和个性化任务来管理时间、训练和学习的工具。",
+  "enter_register": "登录 / 注册",
+
   "dashboard_navbar": "仪表板",
   "account_navbar": "账户",
 

@@ -1,4 +1,8 @@
 {
+  "welcome_home": "Welcome to Athlemics",
+  "welcomeDesc_home": "Your tool to organize your time, training, and studies with a visual calendar, goals, and personalized tasks.",
+  "enter_register": "Login / Register",
+
   "dashboard_navbar": "Dashboard",
   "account_navbar": "Account",
 
