@@ -3,10 +3,11 @@ import { FaUser, FaEnvelope, FaBook, FaRunning } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 
 import { onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-import { getAuth, signOut } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { getAuth, signOut, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "firebase/auth";
 import { app } from "../../firebase";
 import LanguageSelector from '../LanguageSelector';
+import ConfirmAccountDeletion from './ConfirmAccountDeletion';
 
 const db = getFirestore(app);
 const auth = getAuth();
@@ -19,6 +20,9 @@ const Account = () => {
   const [perfil, setPerfil] = useState(null); // perfil carregado do Firebase
   const [editing, setEditing] = useState(false);
   const [blocos, setBlocos] = useState([]);
+
+  // novo estado para controlar modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Função para calcular minutos de blocos
   function calcularMinutos(inicio, fim) {
@@ -63,7 +67,6 @@ const Account = () => {
 
     await setDoc(userDoc, { profile: perfil }, { merge: true });
     setEditing(false);
-    alert(t("profile_saved"));
   };
 
   const handleLogout = async () => {
@@ -71,11 +74,44 @@ const Account = () => {
       await signOut(auth);
       // opcional: redirecionar ou resetar estado
       setPerfil(null);
-      setPerfilSalvo(null);
       setBlocos([]);
-      alert(t("logged_out")); // podes adicionar tradução
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
+    }
+  };
+
+  // nova função que recebe a password e tenta eliminar a conta;
+  // retorna { ok: boolean, message?: string }
+  const deleteAccountWithPassword = async (password) => {
+    if (!auth.currentUser) {
+      return { ok: false, message: "Necessitas estar autenticado para eliminar a conta." };
+    }
+    if (!password) {
+      return { ok: false, message: "Por favor insere a password para confirmar." };
+    }
+
+    try {
+      const user = auth.currentUser;
+      const credential = EmailAuthProvider.credential(user.email, password);
+      await reauthenticateWithCredential(user, credential);
+
+      // tentar apagar documento Firestore do utilizador (se existir)
+      try {
+        const userRef = doc(db, "users", user.uid);
+        await deleteDoc(userRef);
+      } catch (e) {
+        console.warn("Falha ao eliminar documento Firestore do utilizador:", e);
+      }
+
+      // apagar o utilizador do Firebase Auth
+      await deleteUser(user);
+
+      return { ok: true, message: "Conta eliminada com sucesso. A ser redirecionado..." };
+    } catch (err) {
+      let msg = err?.message || "Erro ao eliminar a conta.";
+      if (err?.code === "auth/wrong-password") msg = "Password incorreta.";
+      if (err?.code === "auth/requires-recent-login") msg = "Reautenticação requerida. Por favor inicia sessão novamente e tenta outra vez.";
+      return { ok: false, message: msg };
     }
   };
 
@@ -85,7 +121,7 @@ const Account = () => {
   const totalMinTreino = blocos.filter(b => b.type === 'train').reduce((acc, b) => acc + calcularMinutos(b.start, b.end), 0);
   const ultimaAtividade = blocos.map(b => new Date(`${b.date}T${b.start}`)).sort((a, b) => b - a)[0]?.toLocaleString('pt-PT');
 
-  if (!perfil) return <div>Carregando...</div>; // evita TypeError
+  if (!perfil) return <div>Carregando...</div>;
 
   const perfilEstaPreenchido = camposPerfil.every(c => perfil[c]?.trim() !== '');
 
@@ -133,6 +169,13 @@ const Account = () => {
             >
               {t("logout")}
             </button>
+            {/* botão que abre o modal (agora externo) */}
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="px-6 py-2 rounded-lg bg-red-700 hover:bg-red-700 text-white font-semibold shadow transition-colors duration-200"
+            >
+              {t("delete_account")}
+            </button>
           </div>
         </div>
       ) : (
@@ -160,6 +203,19 @@ const Account = () => {
           </div>
         </div>
       )}
+
+      {/* modal para confirmar eliminação da conta */}
+      <ConfirmAccountDeletion
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async (password) => {
+          const res = await deleteAccountWithPassword(password);
+          if (res.ok) {
+            setTimeout(() => { window.location.href = "/"; }, 900);
+          }
+          return res;
+        }}
+      />
 
       <LanguageSelector/>
     </div>

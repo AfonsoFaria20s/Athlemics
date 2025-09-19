@@ -5,9 +5,15 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword
 } from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { app } from "../../firebase";
+const db = getFirestore(app);
 
 const AuthModal = ({ close }) => {
   const [isRegister, setIsRegister] = useState(false);
+  const [name, setName] = useState("");
+  const [modalidade, setModalidade] = useState("");
+  const [curso, setCurso] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,7 +22,19 @@ const AuthModal = ({ close }) => {
     setError("");
     try {
       if (isRegister) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // gravar perfil inicial no Firestore para usar depois na dashboard
+        try {
+          const userRef = doc(db, "users", userCredential.user.uid);
+          await setDoc(userRef, {
+            profile: { nome: name || "", modalidade: modalidade || "", curso: curso || "" },
+            blocks: [],
+            goals: []
+          });
+        } catch (e) {
+          // não bloquear o registo se a escrita falhar, mas reportar
+          console.warn("Erro ao gravar profile no Firestore:", e);
+        }
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -33,6 +51,32 @@ const AuthModal = ({ close }) => {
         <h2 className="text-xl font-bold mb-4 text-blue-700">
           {isRegister ? "Criar Conta" : "Iniciar Sessão"}
         </h2>
+
+        {isRegister && (
+          <>
+            <input
+              type="text"
+              placeholder="Nome"
+              className="w-full mb-3 p-2 border rounded"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Modalidade"
+              className="w-full mb-3 p-2 border rounded"
+              value={modalidade}
+              onChange={(e) => setModalidade(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Curso"
+              className="w-full mb-3 p-2 border rounded"
+              value={curso}
+              onChange={(e) => setCurso(e.target.value)}
+            />
+          </>
+        )}
 
         <input
           type="email"
