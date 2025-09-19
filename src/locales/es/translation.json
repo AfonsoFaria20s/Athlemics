@@ -56,5 +56,15 @@
   "edit_goal": "Editar Meta",
   "close": "Cerrar",
   "created": "Creada",
-  "completed": "Completada"
+  "completed": "Completada",
+  "repeat_none": "No repetir",
+  "repeat_every_day": "Todos los días",
+  "repeat_weekdays": "Días laborables",
+  "repeat_weekly": "Cada semana",
+  "repeat_monthly": "Cada mes",
+  "repeat_yearly": "Cada año",
+  "confirm_deletion": "Confirmar",
+  "choose_delete_option": "¿Cómo desea eliminar?",
+  "delete_one": "Solo este",
+  "delete_all_repeated": "Todos los repetidos"
 }

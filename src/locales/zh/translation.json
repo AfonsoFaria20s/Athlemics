@@ -56,5 +56,15 @@
   "edit_goal": "编辑目标",
   "close": "关闭",
   "created": "创建于",
-  "completed": "完成于"
+  "completed": "完成于",
+  "repeat_none": "不重复",
+  "repeat_every_day": "每天",
+  "repeat_weekdays": "工作日",
+  "repeat_weekly": "每周",
+  "repeat_monthly": "每月",
+  "repeat_yearly": "每年",
+  "confirm_deletion": "确认",
+  "choose_delete_option": "您想如何删除？",
+  "delete_one": "仅此项",
+  "delete_all_repeated": "全部重复项"
 }

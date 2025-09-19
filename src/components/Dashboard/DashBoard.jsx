@@ -8,6 +8,7 @@ import GoalsSection from "./GoalsSelection";
 import Calendar from "./Calendar";
 import Timeline from "./Timeline";
 import AddEditBlockModal from "./AddEditBlockModal";
+import ConfirmRemoveBlock from "./ConfirmRemoveBlock";
 
 const DashBoard = () => {
   const { t, i18n } = useTranslation();
@@ -17,6 +18,7 @@ const DashBoard = () => {
   const [goals, setGoals] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [account, setAccount] = useState({ nome: "", email: "", curso: "", modalidade: "" });
+  const [blockToDelete, setBlockToDelete] = useState(null);
 
   // Modal and Form State
   const [showForm, setShowForm] = useState(false);
@@ -174,26 +176,23 @@ const DashBoard = () => {
     resetForm();
   };
 
+  const handleCancelDelete = () => setBlockToDelete(null);
+
+  const handleConfirmRemoveOne = () => {
+    setBlocks(prev => prev.filter(b => b.id !== blockToDelete.id));
+    setBlockToDelete(null);
+  };
+
+  const handleConfirmRemoveAll = () => {
+    setBlocks(prev => prev.filter(b => b.repeatId !== blockToDelete.repeatId));
+    setBlockToDelete(null);
+  };
+
   const removeBlock = (id) => {
     const block = blocks.find(b => b.id === id);
     if (!block) return;
-
-    if (block.repeatId) {
-      const confirmAll = window.confirm(
-        t("delete_all_repeated") || "Queres apagar todos os blocos repetidos?"
-      );
-      if (confirmAll) {
-        setBlocks(prev => prev.filter(b => b.repeatId !== block.repeatId));
-      } else {
-        setBlocks(prev => prev.filter(b => b.id !== id));
-      }
-    } else {
-      if (confirmSingle) {
-        setBlocks(prev => prev.filter(b => b.id !== id));
-      }
-    }
+    setBlockToDelete(block); // abre modal
   };
-
 
   const openEditModal = (block) => {
     setEditId(block.id);
@@ -247,6 +246,15 @@ const DashBoard = () => {
             setFormData={setFormData}
             handleAddBlock={handleAddBlock}
             resetForm={resetForm}
+            t={t}
+          />
+          
+        )}
+        {blockToDelete && (
+          <ConfirmRemoveBlock
+            onCancel={handleCancelDelete}
+            onRemoveOne={handleConfirmRemoveOne}
+            onRemoveAll={handleConfirmRemoveAll}
             t={t}
           />
         )}

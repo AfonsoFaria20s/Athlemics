@@ -56,5 +56,15 @@
   "edit_goal": "Edit Goal",
   "close": "Close",
   "created": "Created",
-  "completed": "Completed"
+  "completed": "Completed",
+  "repeat_none": "Do not repeat",
+  "repeat_every_day": "Every day",
+  "repeat_weekdays": "Weekdays only",
+  "repeat_weekly": "Every week",
+  "repeat_monthly": "Every month",
+  "repeat_yearly": "Every year",
+  "confirm_deletion": "Confirm",
+  "choose_delete_option": "How would you like to delete?",
+  "delete_one": "This one",
+  "delete_all_repeated": "All repeated"
 }

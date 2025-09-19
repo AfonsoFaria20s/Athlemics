@@ -56,7 +56,15 @@
   "edit_goal": "Ziel bearbeiten",
   "close": "Schließen",
   "created": "Erstellt",
-  "completed": "Abgeschlossen"
-
-
+  "completed": "Abgeschlossen",
+  "repeat_none": "Nicht wiederholen",
+  "repeat_every_day": "Jeden Tag",
+  "repeat_weekdays": "Werktags",
+  "repeat_weekly": "Wöchentlich",
+  "repeat_monthly": "Monatlich",
+  "repeat_yearly": "Jährlich",
+  "confirm_deletion": "Bestätigen",
+  "choose_delete_option": "Wie möchten Sie löschen?",
+  "delete_one": "Nur dieses",
+  "delete_all_repeated": "Alle wiederholten"
 }

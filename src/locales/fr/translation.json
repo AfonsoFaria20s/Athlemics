@@ -56,5 +56,15 @@
   "edit_goal": "Modifier l'Objectif",
   "close": "Fermer",
   "created": "Créée",
-  "completed": "Terminée"
+  "completed": "Terminée",
+  "repeat_none": "Ne pas répéter",
+  "repeat_every_day": "Tous les jours",
+  "repeat_weekdays": "Jours ouvrés",
+  "repeat_weekly": "Chaque semaine",
+  "repeat_monthly": "Chaque mois",
+  "repeat_yearly": "Chaque année",
+  "confirm_deletion": "Confirmer",
+  "choose_delete_option": "Comment souhaitez-vous supprimer ?",
+  "delete_one": "Celui-ci",
+  "delete_all_repeated": "Tous les répétés"
 }

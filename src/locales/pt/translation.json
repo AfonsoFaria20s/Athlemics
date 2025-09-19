@@ -62,5 +62,9 @@
   "repeat_weekdays": "Todos os dias da semana",
   "repeat_weekly": "Todas as semanas",
   "repeat_monthly": "Todos os meses",
-  "repeat_yearly": "Todos os anos"
+  "repeat_yearly": "Todos os anos",
+  "confirm_deletion": "Confirmar",
+  "choose_delete_option": "Como deseja eliminar?",
+  "delete_one": "Este",
+  "delete_all_repeated": "Todos"
 }
