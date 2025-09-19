@@ -56,5 +56,11 @@
   "edit_goal": "Editar Meta",
   "close": "Fechar",
   "created": "Criada",
-  "completed": "Concluída"
+  "completed": "Concluída",
+  "repeat_none": "Não repetir",
+  "repeat_every_day": "Todos os dias",
+  "repeat_weekdays": "Todos os dias da semana",
+  "repeat_weekly": "Todas as semanas",
+  "repeat_monthly": "Todos os meses",
+  "repeat_yearly": "Todos os anos"
 }

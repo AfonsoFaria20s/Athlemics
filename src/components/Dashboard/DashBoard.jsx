@@ -22,8 +22,14 @@ const DashBoard = () => {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
-    title: "", desc: "", start: "", end: "", type: "study",
+    title: "",
+    desc: "",
+    start: "",
+    end: "",
+    type: "study",
+    repeat: "none",
   });
+
 
   // Load data from localStorage on initial render
   useEffect(() => {
@@ -56,7 +62,15 @@ const DashBoard = () => {
     d1.getMonth() === d2.getMonth() &&
     d1.getDate() === d2.getDate();
 
-  const dateStringToFilter = selectedDate.toISOString().split('T')[0];
+  const formatLocalDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // meses vão de 0-11
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const dateStringToFilter = formatLocalDate(selectedDate);
   const filteredBlocks = blocks
     .filter(b => b.date === dateStringToFilter)
     .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
@@ -92,18 +106,94 @@ const DashBoard = () => {
   const handleAddBlock = () => {
     if (!formData.title || !formData.start || !formData.end) return;
 
-    const newBlock = {
-      id: editId || Date.now(),
-      ...formData,
-      date: selectedDate.toISOString().split("T")[0],
-      completed: false,
+    const baseDate = new Date(selectedDate);
+    const repeat = formData.repeat || "none";
+    const repeatId = repeat !== "none" ? Date.now() + "-" + Math.random() : null;
+    const newBlocks = [];
+
+    const addBlockForDate = (date) => {
+      newBlocks.push({
+        id: Date.now() + Math.random(), // garantir IDs únicos
+        ...formData,
+        date: formatLocalDate(date),
+        completed: false,
+        repeatId: repeatId,
+      });
     };
 
-    setBlocks(prev => editId ? prev.map(b => (b.id === editId ? newBlock : b)) : [...prev, newBlock]);
+    if (editId) {
+      // Atualizar apenas o bloco editado
+      setBlocks(prev =>
+        prev.map(b =>
+          b.id === editId
+            ? { ...b, ...formData, date: formatLocalDate(baseDate) }
+            : b
+        )
+      );
+      resetForm();
+      return;
+    }
+
+    // Criar blocos com base na repetição
+    if (repeat === "none") {
+      addBlockForDate(baseDate);
+    } else if (repeat === "every_day") {
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(baseDate);
+        date.setDate(date.getDate() + i);
+        addBlockForDate(date);
+      }
+    } else if (repeat === "weekdays") {
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(baseDate);
+        date.setDate(date.getDate() + i);
+        const day = date.getDay();
+        if (day >= 1 && day <= 5) addBlockForDate(date);
+      }
+    } else if (repeat === "weekly") {
+      for (let i = 0; i < 8; i++) {
+        const date = new Date(baseDate);
+        date.setDate(date.getDate() + i * 7);
+        addBlockForDate(date);
+      }
+    } else if (repeat === "monthly") {
+      for (let i = 0; i < 6; i++) {
+        const date = new Date(baseDate);
+        date.setMonth(date.getMonth() + i);
+        addBlockForDate(date);
+      }
+    } else if (repeat === "yearly") {
+      for (let i = 0; i < 3; i++) {
+        const date = new Date(baseDate);
+        date.setFullYear(date.getFullYear() + i);
+        addBlockForDate(date);
+      }
+    }
+
+    setBlocks(prev => [...prev, ...newBlocks]);
     resetForm();
   };
 
-  const removeBlock = (id) => setBlocks(blocks.filter(b => b.id !== id));
+  const removeBlock = (id) => {
+    const block = blocks.find(b => b.id === id);
+    if (!block) return;
+
+    if (block.repeatId) {
+      const confirmAll = window.confirm(
+        t("delete_all_repeated") || "Queres apagar todos os blocos repetidos?"
+      );
+      if (confirmAll) {
+        setBlocks(prev => prev.filter(b => b.repeatId !== block.repeatId));
+      } else {
+        setBlocks(prev => prev.filter(b => b.id !== id));
+      }
+    } else {
+      if (confirmSingle) {
+        setBlocks(prev => prev.filter(b => b.id !== id));
+      }
+    }
+  };
+
 
   const openEditModal = (block) => {
     setEditId(block.id);
@@ -113,7 +203,9 @@ const DashBoard = () => {
       start: block.start,
       end: block.end,
       type: block.type,
+      repeat: block.repeat || "none",
     });
+
     setShowForm(true);
   };
 

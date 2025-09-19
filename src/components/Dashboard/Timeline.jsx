@@ -6,29 +6,72 @@ const HOUR_GAP = 8;
 const TOTAL_HEIGHT = (HOUR_HEIGHT + HOUR_GAP) * 24;
 const PADDING_TOP = 16;
 const MINUTE_HEIGHT = (HOUR_HEIGHT + HOUR_GAP) / 60;
+const SNAP_MINUTES = 15; // Arrastar de 15 em 15 minutos
 
 const Timeline = ({ selectedDate, filteredBlocks, setBlocks, setShowForm, openEditModal, removeBlock, toMinutes, t }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [dragging, setDragging] = useState(null); // { id, startY, originalStart, originalEnd }
 
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!dragging) return;
+      const deltaY = e.clientY - dragging.startY;
+      const deltaMinutes = Math.round(deltaY / MINUTE_HEIGHT / SNAP_MINUTES) * SNAP_MINUTES;
+
+      setBlocks(prev =>
+        prev.map(b => {
+          if (b.id !== dragging.id) return b;
+          const newStart = Math.max(0, dragging.originalStart + deltaMinutes);
+          const newEnd = Math.max(newStart + 5, dragging.originalEnd + deltaMinutes); // mínimo 5 min
+          return {
+            ...b,
+            start: `${String(Math.floor(newStart / 60)).padStart(2,'0')}:${String(newStart % 60).padStart(2,'0')}`,
+            end: `${String(Math.floor(newEnd / 60)).padStart(2,'0')}:${String(newEnd % 60).padStart(2,'0')}`
+          };
+        })
+      );
+    };
+
+    const handleMouseUp = () => {
+      if (dragging) setDragging(null);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [dragging, setBlocks]);
+
+  const handleMouseDown = (e, block) => {
+    e.preventDefault();
+    const startY = e.clientY;
+    setDragging({
+      id: block.id,
+      startY,
+      originalStart: toMinutes(block.start),
+      originalEnd: toMinutes(block.end),
+    });
+  };
+
   const isToday = new Date().toDateString() === selectedDate.toDateString();
   const currentTop = (currentTime.getHours() * 60 + currentTime.getMinutes()) * MINUTE_HEIGHT + PADDING_TOP;
 
   function groupOverlappingBlocks(blocks) {
     if (!blocks) return [];
-    // ... (a tua função groupOverlappingBlocks pode ser movida para cá ou para um ficheiro de utilitários)
     const sorted = [...blocks].sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
     const groups = [];
 
     sorted.forEach(block => {
       let placed = false;
       for (const group of groups) {
-        // Verifica se o bloco atual sobrepõe-se com qualquer bloco no grupo
-        const hasOverlap = group.some(b => 
+        const hasOverlap = group.some(b =>
           toMinutes(block.start) < toMinutes(b.end) && toMinutes(block.end) > toMinutes(b.start)
         );
         if (hasOverlap) {
@@ -81,6 +124,7 @@ const Timeline = ({ selectedDate, filteredBlocks, setBlocks, setShowForm, openEd
                 return (
                     <div
                         key={block.id}
+                        onMouseDown={(e) => handleMouseDown(e, block)}
                         className={`timeline-block absolute flex items-center px-3 py-2 rounded-lg shadow-md text-sm
                             ${block.type === "study" ? "bg-slate-500 text-white" : ""}
                             ${block.type === "train" ? "bg-yellow-300 text-black" : ""}
@@ -88,15 +132,19 @@ const Timeline = ({ selectedDate, filteredBlocks, setBlocks, setShowForm, openEd
                             ${block.type === "task" ? "bg-sky-600 text-white" : ""}
                             ${block.type === "meeting" ? "bg-green-300 text-black" : ""}`
                         }
-                        style={{ top, height, width: `${width}%`, left: `${left}%`, zIndex: 20 }}
+                        style={{ top, height, width: `${width}%`, left: `${left}%`, zIndex: 20, cursor: "grab" }}
                     >
                         <span className="font-semibold mr-2 text-xs">{block.start} - {block.end}</span>
                         <span className="flex-1 truncate">{block.title}</span>
                         <button onClick={() => openEditModal(block)} className="ml-auto text-white hover:text-yellow-100 p-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                          </svg>
                         </button>
                         <button onClick={() => removeBlock(block.id)} className="text-white hover:text-red-100 p-1">
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                          </svg>
                         </button>
                     </div>
                 );
