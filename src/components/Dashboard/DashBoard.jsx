@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "../../styles/DashBoard.css";
 
+import { onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { app } from "../../firebase"; // ajusta o caminho
+const db = getFirestore(app);
+const auth = getAuth();
+
+
 import DashboardHeader from "./DashboardHeader";
 import InfoCards from "./InfoCards";
 import GoalsSection from "./GoalsSelection";
@@ -34,23 +42,57 @@ const DashBoard = () => {
 
 
   // Load data from localStorage on initial render
+  const [loaded, setLoaded] = useState(false);
+
   useEffect(() => {
-    const storedBlocks = JSON.parse(localStorage.getItem("blocks")) || [];
-    setBlocks(storedBlocks);
-    const storedGoals = JSON.parse(localStorage.getItem("goals")) || [];
-    setGoals(storedGoals);
-    const storedAccount = localStorage.getItem("perfil");
-    if (storedAccount) setAccount(JSON.parse(storedAccount));
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+
+      const userDoc = doc(db, "users", user.uid);
+      const snap = await getDoc(userDoc);
+
+      if (snap.exists()) {
+        const data = snap.data();
+        setBlocks(data.blocks || []);
+        setGoals(data.goals || []);
+        setAccount(data.profile || { nome: "", email: "", curso: "", modalidade: "" });
+      } else {
+        await setDoc(userDoc, { blocks: [], goals: [], profile: {} });
+        setBlocks([]);
+        setGoals([]);
+        setAccount({ nome: "", email: "", curso: "", modalidade: "" });
+      }
+
+      setLoaded(true);
+    });
+
+    return () => unsubscribe();
   }, []);
 
+
   // Persist data to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem("blocks", JSON.stringify(blocks));
-  }, [blocks]);
+  const saveToFirestore = async (field, value) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userDoc = doc(db, "users", user.uid);
+    await setDoc(userDoc, { [field]: value }, { merge: true });
+  };
 
   useEffect(() => {
-    localStorage.setItem("goals", JSON.stringify(goals));
-  }, [goals]);
+    if (!loaded) return;
+    saveToFirestore("blocks", blocks);
+  }, [blocks, loaded]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    saveToFirestore("goals", goals);
+  }, [goals, loaded]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    saveToFirestore("profile", account);
+  }, [account, loaded]);
 
   // Helper Functions
   const toMinutes = (time) => {
