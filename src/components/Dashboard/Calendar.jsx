@@ -10,7 +10,7 @@ const Calendar = ({ selectedDate, setSelectedDate, handleMonthChange, i18n, t })
   const startDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getDay();
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow flex-1 min-w-[320px] max-w-lg border border-blue-100">
+    <div className="bg-white flex-1 min-w-[320px] max-w-lg">
       <div className="flex justify-between items-center mb-4">
         <button onClick={() => handleMonthChange("prev")} className="px-3 py-1 rounded hover:bg-slate-200 text-xl">‹</button>
         <h2 className="font-semibold text-lg text-blue-800">

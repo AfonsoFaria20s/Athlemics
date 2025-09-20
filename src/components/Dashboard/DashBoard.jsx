@@ -5,25 +5,25 @@ import "../../styles/DashBoard.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { app } from "../../firebase"; // ajusta o caminho
+import { app } from "../../firebase";
 const db = getFirestore(app);
 const auth = getAuth();
 
 
 import DashboardHeader from "./DashboardHeader";
 import InfoCards from "./InfoCards";
-import GoalsSection from "./GoalsSelection";
 import Calendar from "./Calendar";
 import Timeline from "./Timeline";
 import AddEditBlockModal from "./AddEditBlockModal";
 import ConfirmRemoveBlock from "./ConfirmRemoveBlock";
+import HealthOverview from "./HealthOverview"; // novo import
 
 const DashBoard = () => {
   const { t, i18n } = useTranslation();
 
   // State Management
   const [blocks, setBlocks] = useState([]);
-  const [goals, setGoals] = useState([]);
+  const [healthRecords, setHealthRecords] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [account, setAccount] = useState({ nome: "", email: "", curso: "", modalidade: "" });
   const [blockToDelete, setBlockToDelete] = useState(null);
@@ -54,12 +54,12 @@ const DashBoard = () => {
       if (snap.exists()) {
         const data = snap.data();
         setBlocks(data.blocks || []);
-        setGoals(data.goals || []);
+        setHealthRecords(data.healthRecords || {});
         setAccount(data.profile || { nome: "", email: "", curso: "", modalidade: "" });
       } else {
-        await setDoc(userDoc, { blocks: [], goals: [], profile: {} });
+        await setDoc(userDoc, { blocks: [], profile: {} });
         setBlocks([]);
-        setGoals([]);
+        setHealthRecords({});
         setAccount({ nome: "", email: "", curso: "", modalidade: "" });
       }
 
@@ -84,10 +84,11 @@ const DashBoard = () => {
     saveToFirestore("blocks", blocks);
   }, [blocks, loaded]);
 
+  // opcional: persistir healthRecords a partir da dashboard se for alterado aqui (não obrigatório)
   useEffect(() => {
     if (!loaded) return;
-    saveToFirestore("goals", goals);
-  }, [goals, loaded]);
+    saveToFirestore("healthRecords", healthRecords);
+  }, [healthRecords, loaded]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -160,7 +161,7 @@ const DashBoard = () => {
 
     const addBlockForDate = (date) => {
       newBlocks.push({
-        id: Date.now() + Math.random(), // garantir IDs únicos
+        id: Date.now() + Math.random(),
         ...formData,
         date: formatLocalDate(date),
         completed: false,
@@ -276,31 +277,53 @@ const DashBoard = () => {
       <div className="max-w-7xl mx-auto px-6 pt-10 pb-16">
         <DashboardHeader account={account} t={t} />
 
-        <div className="flex flex-wrap gap-6 mb-12">
-          <InfoCards nextBlocks={nextBlocks} taskBlocks={taskBlocks} t={t} />
-          <GoalsSection goals={goals} setGoals={setGoals} t={t} />
-        </div>
+        {/* Top area: HealthOverview (left) + 3-panel group (right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-stretch">
+          {/* Left: HealthOverview */}
+          <div className="h-full">
+            <HealthOverview blocks={blocks} healthRecords={healthRecords} t={t} />
+          </div>
 
-        <div className="flex flex-wrap gap-6">
-          <Calendar
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            handleMonthChange={handleMonthChange}
-            i18n={i18n}
-            t={t}
-          />
-          <Timeline
-            selectedDate={selectedDate}
-            filteredBlocks={filteredBlocks}
-            setBlocks={setBlocks}
-            setShowForm={setShowForm}
-            openEditModal={openEditModal}
-            removeBlock={removeBlock}
-            toMinutes={toMinutes}
+          {/* Right: three panels in a single card-like container, matching height */}
+          <InfoCards
+            nextBlocks={nextBlocks}
+            taskBlocks={taskBlocks}
             t={t}
           />
         </div>
 
+        {/* Main area: Calendar (left) + Timeline (right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow p-5">
+              <Calendar
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                handleMonthChange={handleMonthChange}
+                i18n={i18n}
+                t={t}
+              />
+            </div>
+          </div>
+
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow p-5">
+
+              <Timeline
+                selectedDate={selectedDate}
+                filteredBlocks={filteredBlocks}
+                setBlocks={setBlocks}
+                setShowForm={setShowForm}
+                openEditModal={openEditModal}
+                removeBlock={removeBlock}
+                toMinutes={toMinutes}
+                t={t}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Modals — unchanged */}
         {showForm && (
           <AddEditBlockModal
             showForm={showForm}
@@ -311,7 +334,6 @@ const DashBoard = () => {
             resetForm={resetForm}
             t={t}
           />
-          
         )}
         {blockToDelete && (
           <ConfirmRemoveBlock

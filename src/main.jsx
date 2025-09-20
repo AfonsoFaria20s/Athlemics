@@ -39,7 +39,7 @@ createRoot(document.getElementById('root')).render(
             <Account />
           </PrivateRoute>
         } />
-        <Route path="/" element={
+        <Route path="/health" element={
           <PrivateRoute>
             <Navbar/>
             <Health/>

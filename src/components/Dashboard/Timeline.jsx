@@ -113,13 +113,15 @@ const Timeline = ({ selectedDate, filteredBlocks, setBlocks, setShowForm, openEd
   const positionedBlocks = groupOverlappingBlocks(filteredBlocks);
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow flex-1 min-w-[350px] border border-blue-100">
-      <h2 className="text-lg font-bold text-blue-800 mb-4">{t("day")} {selectedDate.toLocaleDateString("pt-PT")}</h2>
-      <button 
-        onClick={() => setShowForm(true)} 
-        className="mb-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition w-fit">
-        + {t("add_block")}
-      </button>
+    <div className="bg-white flex-1 min-w-[350px] ">
+      <div className="flex flex-row items-center">
+        <h2 className="mr-5 text-lg font-bold text-blue-800 mb-4">{selectedDate.toLocaleDateString("pt-PT")}</h2>
+        <button 
+          onClick={() => setShowForm(true)} 
+          className="mb-4 bg-green-500 hover:bg-green-600 text-xl text-white px-3 py-1 rounded-lg shadow transition w-fit">
+          +
+        </button>
+      </div>
 
       <div ref={containerRef} className="relative overflow-y-scroll max-h-[400px] rounded bg-slate-50 border border-slate-200" style={{ height: TOTAL_HEIGHT, paddingTop: PADDING_TOP, paddingLeft: 16 }}>
         {/* Horas */}
